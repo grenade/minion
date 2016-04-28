@@ -55,6 +55,7 @@ namespace minion.powers
             while (_working)
             {
                 logger.Debug("minion dutifully completes unappreciated labours.");
+                Thread.Sleep(5000);
             }
             logger.Debug("minion is at peace.");
         }
@@ -72,6 +73,8 @@ namespace minion.powers
                 - watch mercillesly while paeon executes payload tasks, criticise often, tally working time
                 - report completion, take credit, bask in smug satisfaction
                 */
+                var paeon = new Paeon();
+                paeon.Kill();
             }
             catch (Exception ex)
             {
