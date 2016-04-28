@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("minion.daemon")]
-[assembly: AssemblyDescription("minion is a light, fast, native implementation of a TaskCluster worker for Windows")]
+[assembly: AssemblyDescription("minion is a Windows TaskCluster worker that is light, fast and native")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mozilla Corporation")]
 [assembly: AssemblyProduct("minion.daemon")]
