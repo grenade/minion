@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minion.daemon", "minion.daemon\minion.daemon.csproj", "{2E069032-67F8-424D-A4B5-D29F3E090049}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minion.powers", "minion.powers\minion.powers.csproj", "{4B7181F1-112B-4BD7-9A72-B57E12560B90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2E069032-67F8-424D-A4B5-D29F3E090049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E069032-67F8-424D-A4B5-D29F3E090049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E069032-67F8-424D-A4B5-D29F3E090049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B7181F1-112B-4BD7-9A72-B57E12560B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B7181F1-112B-4BD7-9A72-B57E12560B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B7181F1-112B-4BD7-9A72-B57E12560B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B7181F1-112B-4BD7-9A72-B57E12560B90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

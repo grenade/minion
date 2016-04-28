@@ -1,6 +1,6 @@
 ﻿namespace minion.daemon
 {
-    partial class Service1
+    partial class Dispatcher
     {
         /// <summary> 
         /// Required designer variable.
