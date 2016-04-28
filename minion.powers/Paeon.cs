@@ -133,6 +133,19 @@ namespace minion.powers
             logger.Debug("minion {0} {1} and felt {2} remorse.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "slew" : "killed", Name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "no" : "some");
         }
 
+        public static void KillAll()
+        {
+            using (var mc = new PrincipalContext(ContextType.Machine))
+            {
+                GroupPrincipal.FindByIdentity(mc, "Users").Members.Where(m => m.SamAccountName.StartsWith("paeon-")).AsParallel().ForAll(paeon =>
+                {
+                    var name = paeon.SamAccountName;
+                    paeon.Delete();
+                    logger.Debug("minion {0} {1} during a {2}.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "anihilated" : "slaughtered", name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "killing spree" : "rampage");
+                });
+            }
+        }
+
         #endregion private helper methods
     }
 }

@@ -57,6 +57,7 @@ namespace minion.powers
                 logger.Debug("minion dutifully completes unappreciated labours.");
                 Thread.Sleep(5000);
             }
+            Paeon.KillAll();
             logger.Debug("minion is at peace.");
         }
 
@@ -69,11 +70,12 @@ namespace minion.powers
                 /*
                 - scout for payload quests
                 - claim quest for the glory of england, assure taskmaster of capable hands
-                - spawn a paeon to do all the work or take the blame for failure
+                - done: spawn a paeon to do all the work or take the blame for failure
                 - watch mercillesly while paeon executes payload tasks, criticise often, tally working time
                 - report completion, take credit, bask in smug satisfaction
                 */
                 var paeon = new Paeon();
+                // todo: execute tasks
                 paeon.Kill();
             }
             catch (Exception ex)
@@ -81,7 +83,8 @@ namespace minion.powers
                 /*
                 - report failure to taskmaster, blame paeon
                 */
-                logger.Error(ex);
+                logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.");
+                Paeon.KillAll();
             }
             finally
             {

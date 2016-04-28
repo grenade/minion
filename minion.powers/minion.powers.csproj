@@ -52,6 +52,7 @@
     <Compile Include="Attend.cs" />
     <Compile Include="Paeon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
