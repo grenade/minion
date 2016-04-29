@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+This Source Code Form is not under license or protected by anyone.
+Nobody cares if you alter it or pretend you wrote it.
+*/
+
+using System;
 
 namespace minion.powers
 {
