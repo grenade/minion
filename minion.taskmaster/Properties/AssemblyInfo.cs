@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("minion.powers")]
+[assembly: AssemblyTitle("minion.taskmaster")]
 [assembly: AssemblyDescription("minion is a Windows TaskCluster worker that is light, fast and native")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mozilla Corporation")]
-[assembly: AssemblyProduct("minion.powers")]
+[assembly: AssemblyProduct("minion.taskmaster")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4b7181f1-112b-4bd7-9a72-b57e12560b90")]
+[assembly: Guid("b712a0f2-3b89-43fc-8767-bf83a90b73b6")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4B7181F1-112B-4BD7-9A72-B57E12560B90}</ProjectGuid>
+    <ProjectGuid>{B712A0F2-3B89-43FC-8767-BF83A90B73B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>minion.powers</RootNamespace>
-    <AssemblyName>minion.powers</AssemblyName>
+    <RootNamespace>minion.taskmaster</RootNamespace>
+    <AssemblyName>minion.taskmaster</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,17 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.2\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog.Targets.Syslog, Version=2.1.5893.18660, Culture=neutral, PublicKeyToken=a15d6ba50060b73f, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.Targets.Syslog.2.1.5893.18660\lib\net45\NLog.Targets.Syslog.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,20 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attend.cs" />
-    <Compile Include="Executioner.cs" />
-    <Compile Include="Paeon.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="EnvironmentVariable.cs" />
+    <Compile Include="Listener.cs" />
+    <Compile Include="Payload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\minion.taskmaster\minion.taskmaster.csproj">
-      <Project>{b712a0f2-3b89-43fc-8767-bf83a90b73b6}</Project>
-      <Name>minion.taskmaster</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

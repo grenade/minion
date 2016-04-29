@@ -36,12 +36,12 @@ namespace minion.powers
 
         public void Init()
         {
-            logger.Debug("minion is poised.");
+            logger.Trace("minion is poised.");
         }
 
         public void Run()
         {
-            logger.Debug("minion seeks purpose.");
+            logger.Trace("minion seeks purpose.");
             while (!_interrupt)
             {
                 Work();
@@ -54,41 +54,72 @@ namespace minion.powers
             _interrupt = true;
             while (_working)
             {
-                logger.Debug("minion dutifully completes unappreciated labours.");
+                logger.Trace("minion dutifully completes unappreciated labours.");
                 Thread.Sleep(5000);
             }
             Paeon.KillAll();
-            logger.Debug("minion is at peace.");
+            logger.Trace("minion is at peace.");
         }
 
+        /// <summary>
+        /// - scout for payload quests
+        /// - claim quest for the glory of england, assure taskmaster of capable hands
+        /// - done: spawn a paeon to do all the work or take the blame for failure
+        /// - watch mercillesly while paeon executes payload tasks, criticise often, tally working time
+        /// - report completion, take credit, bask in smug satisfaction
+        /// </summary>
         private void Work()
         {
-            logger.Debug("minion finds fullfilment in service.");
+            logger.Trace("minion finds fullfilment in service.");
             _working = true;
-            try
+
+            if (Scout.HasFoundAnHonourableQuest())
             {
-                /*
-                - scout for payload quests
-                - claim quest for the glory of england, assure taskmaster of capable hands
-                - done: spawn a paeon to do all the work or take the blame for failure
-                - watch mercillesly while paeon executes payload tasks, criticise often, tally working time
-                - report completion, take credit, bask in smug satisfaction
-                */
-                var paeon = new Paeon();
-                // todo: execute tasks
-                paeon.Kill();
+                logger.Trace("minion cracks the whip.");
+                var quest = Scout.AnHonourableQuest();
+                try
+                {
+                    var paeon = new Paeon();
+                    var payload = Scout.AnHonourableQuest();
+                    var environmentVariables = payload.Environment;
+
+                    foreach(var command in payload.Commands)
+                    {
+                        var executioner = new Executioner(paeon, environmentVariables, command);
+                        while (!executioner.HasDoneTheDeed)
+                        {
+                            logger.Trace("paeon {0} admires the executioners axe blade.", (DateTime.Now.Ticks % 2 == 0) ? "gleefully" : "somberly");
+                            Thread.Sleep(2000);
+                        }
+                        environmentVariables = executioner.TheMessAfterTheDeed;
+                        if (executioner.IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
+                        {
+                            logger.Trace("paeon {0}.", (DateTime.Now.Ticks % 2 == 0)? "giggles" : "squirms delightedly");
+                        }
+                        else
+                        {
+                            logger.Trace("paeon considers fate, {0}.", (DateTime.Now.Ticks % 2 == 0) ? "frightfully" : "dejectedly");
+                        }
+                    }
+                    paeon.Kill();
+                }
+                catch (Exception ex)
+                {
+                    /*
+                    - todo: report failure to taskmaster, blame paeon
+                    */
+                    logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.");
+                    Paeon.KillAll();
+                }
+                finally
+                {
+                    _working = false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                /*
-                - report failure to taskmaster, blame paeon
-                */
-                logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.");
-                Paeon.KillAll();
-            }
-            finally
-            {
-                _working = false;
+                logger.Trace("minion fondly remembers purposeful days of lore.");
+                Thread.Sleep(1000);
             }
         }
 
@@ -96,7 +127,7 @@ namespace minion.powers
         {
             try
             {
-                logger.Debug("minion mops up.");
+                logger.Trace("minion mops up.");
             }
             catch (Exception ex)
             {

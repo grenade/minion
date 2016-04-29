@@ -25,8 +25,8 @@ namespace minion.daemon
         {
             if (Environment.UserInteractive)
             {
-                logger.Debug("minion is attentive.");
-                logger.Debug("minion's life will be cut short by a key press.");
+                logger.Trace("minion is attentive.");
+                logger.Trace("minion's life will be cut short by a key press.");
                 Attend.Instance.Init();
                 Task.Factory.StartNew(() => Attend.Instance.Run());
                 while (!Console.KeyAvailable)
@@ -34,7 +34,7 @@ namespace minion.daemon
                 Console.ReadKey();
                 Console.WriteLine();
                 Task.Factory.StartNew(() => Attend.Instance.Stop());
-                logger.Debug("minion is mortally wounded. another key press would be merciful.");
+                logger.Trace("minion is mortally wounded. another key press would be merciful.");
                 Console.ReadKey();
             }
             else

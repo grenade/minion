@@ -14,9 +14,16 @@ using System.Security.AccessControl;
 
 namespace minion.powers
 {
+    /// <summary>
+    /// Paeons are disposable worker accounts that carry out tasks on behalf of the minion.
+    /// The lifespan of a paeon may cover multiple tasks but never exceeds a single payload.
+    /// The Paeon class handles user account creation and cleanup, permissions and paths related to the paeon task accounts.
+    /// </summary>
     internal class Paeon
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly string[] DefaultGroupMemberships = new[] { "Users" };
 
         public Paeon()
         {
@@ -25,7 +32,7 @@ namespace minion.powers
             HomeDrive = ChooseDrive();
             HomePath = Path.Combine(string.Concat(HomeDrive, Path.DirectorySeparatorChar), Name);
             UserPrincipal = CreateUserAccount();
-            JoinGroups(new[] { "Users" });
+            JoinGroups(DefaultGroupMemberships);
             CreateHomePaths();
         }
 
@@ -88,7 +95,7 @@ namespace minion.powers
                 };
                 up.Save();
             }
-            logger.Debug("minion spawned a paeon and named {0}: {1}.", (female ? "her" : "him"), Name);
+            logger.Trace("minion spawned a paeon and named {0}: {1}.", (female ? "her" : "him"), Name);
             Console.WriteLine();
             return up;
         }
@@ -106,7 +113,7 @@ namespace minion.powers
                         group.Save();
                     });
             }
-            logger.Debug("minion commanded: {0} to treat {1} as their own.", string.Join(", ", groups), Name);
+            logger.Trace("minion commanded: {0} to treat {1} as their own.", string.Join(", ", groups), Name);
         }
 
         private void CreateHomePaths()
@@ -124,25 +131,32 @@ namespace minion.powers
             var ds = new DirectorySecurity();
             sids.AsParallel().ForAll(sid => ds.AddAccessRule(new FileSystemAccessRule(sid, FileSystemRights.FullControl, AccessControlType.Allow)));
             paths.AsParallel().ForAll(path => Directory.CreateDirectory(path, ds));
-            logger.Debug("minion created paths: {0} and granted: Administrators and {1} dominion over them.", string.Join(", ", paths), Name);
+            logger.Trace("minion created paths: {0} and granted: Administrators and {1} dominion over them.", string.Join(", ", paths), Name);
         }
 
         public void Kill()
         {
             UserPrincipal.Delete();
-            logger.Debug("minion {0} {1} and felt {2} remorse.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "slew" : "killed", Name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "no" : "some");
+            logger.Trace("minion {0} {1} and felt {2} remorse.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "slew" : "killed", Name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "no" : "some");
         }
 
         public static void KillAll()
         {
             using (var mc = new PrincipalContext(ContextType.Machine))
             {
-                GroupPrincipal.FindByIdentity(mc, "Users").Members.Where(m => m.SamAccountName.StartsWith("paeon-")).AsParallel().ForAll(paeon =>
-                {
-                    var name = paeon.SamAccountName;
-                    paeon.Delete();
-                    logger.Debug("minion {0} {1} during a {2}.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "anihilated" : "slaughtered", name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "killing spree" : "rampage");
-                });
+                DefaultGroupMemberships
+                    .AsParallel()
+                    .Select(group => GroupPrincipal.FindByIdentity(mc, group))
+                    .Where(group => group != null)
+                    .SelectMany(group=>group.Members)
+                    .Where(m=>m.SamAccountName.StartsWith("paeon-"))
+                    .Distinct()
+                    .ForAll(paeon =>
+                    {
+                        var name = paeon.SamAccountName;
+                        paeon.Delete();
+                        logger.Trace("minion {0} {1} during a {2}.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "anihilated" : "slaughtered", name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "killing spree" : "rampage");
+                    });
             }
         }
 
