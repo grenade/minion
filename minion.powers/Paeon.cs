@@ -46,7 +46,7 @@ namespace minion.powers
 
         public string HomePath { get; private set; }
 
-        private bool female = (DateTime.Now.Ticks % 2 == 0);
+        private bool female = (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0 );
 
         #region private helper methods
 

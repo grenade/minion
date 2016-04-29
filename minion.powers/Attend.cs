@@ -6,6 +6,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using NLog;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 
 namespace minion.powers
@@ -81,24 +85,54 @@ namespace minion.powers
                 {
                     var paeon = new Paeon();
                     var payload = Scout.AnHonourableQuest();
+                    logger.Info("payload aquired: {0}", payload.Id);
                     var environmentVariables = payload.Environment;
+
+                    var commandFailureEncountered = false;
 
                     foreach(var command in payload.Commands)
                     {
-                        var executioner = new Executioner(paeon, environmentVariables, command);
-                        while (!executioner.HasDoneTheDeed)
+                        if (_interrupt)
                         {
-                            logger.Trace("paeon {0} admires the executioners axe blade.", (DateTime.Now.Ticks % 2 == 0) ? "gleefully" : "somberly");
-                            Thread.Sleep(2000);
-                        }
-                        environmentVariables = executioner.TheMessAfterTheDeed;
-                        if (executioner.IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
-                        {
-                            logger.Trace("paeon {0}.", (DateTime.Now.Ticks % 2 == 0)? "giggles" : "squirms delightedly");
+                            logger.Debug("command skipped due to interrupt or service stopping.");
+                            logger.Trace("minion decrees an amnesty for the executioner and the condemned because he is also going to bed. no one knows the scouts whereabouts but minion will find and kill paeon, eventually.");
+                            break;
                         }
                         else
                         {
-                            logger.Trace("paeon considers fate, {0}.", (DateTime.Now.Ticks % 2 == 0) ? "frightfully" : "dejectedly");
+                            if (commandFailureEncountered)
+                            {
+                                // skip running the command
+                                logger.Debug("command skipped due to earlier failures: {0}", command);
+                                logger.Trace("paeon {0} fate, {1}.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "accepts" : "considers", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "frightfully" : "dejectedly");
+                            }
+                            else
+                            {
+                                // run the command
+                                logger.Debug("command execution underway: {0}", command);
+                                var executioner = new Executioner(paeon, environmentVariables, command);
+                                var seenStatusUpdates = new List<string>();
+                                while (!executioner.HasDoneTheDeed)
+                                {
+                                    var availableStatusUpdatesCount = executioner.StatusUpdates.Count;
+                                    var seenStatusUpdatesCount = seenStatusUpdates.Count;
+                                    for (int i = seenStatusUpdatesCount; i < availableStatusUpdatesCount; i++)
+                                    {
+                                        // todo: broadcast via livelog
+                                        seenStatusUpdates.Add(executioner.StatusUpdates[i]);
+                                        logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "shrugs" : "twiddles thumbs");
+                                    }
+                                }
+                                environmentVariables = executioner.TheMessAfterTheDeed;
+                                if (executioner.IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
+                                {
+                                    logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "giggles" : "squirms delightedly");
+                                }
+                                else
+                                {
+                                    commandFailureEncountered = true;
+                                }
+                            }
                         }
                     }
                     paeon.Kill();
@@ -120,6 +154,22 @@ namespace minion.powers
             {
                 logger.Trace("minion fondly remembers purposeful days of lore.");
                 Thread.Sleep(1000);
+            }
+        }
+
+        private void HandleExecutionerPropertyChange(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "StatusUpdates":
+                    logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0 ) ? "shrugs" : "twiddles thumbs");
+                    break;
+                case "IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask":
+                    logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0 ) ? "is vaguely impressed" : "is relieved");
+                    break;
+                case "HasDoneTheDeed":
+                    logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0 ) ? "nods" : "dozes");
+                    break;
             }
         }
 

@@ -6,11 +6,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using minion.taskmaster;
 using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace minion.powers
 {
@@ -23,12 +18,10 @@ namespace minion.powers
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        private static Random randomNumberGenerator = new Random();
-
         public static bool HasFoundAnHonourableQuest()
         {
             // be 25% successful at finding quests.
-            var success = randomNumberGenerator.Next(0, 100) < 25;
+            var success = ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 100) < 25;
             logger.Trace("scout has {0}.", success ? "made triumphant noises" : "been found to be useless, yet again");
             return success;
         }

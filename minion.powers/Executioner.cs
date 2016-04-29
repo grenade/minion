@@ -8,45 +8,11 @@ using minion.taskmaster;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
 
 namespace minion.powers
 {
-    enum StatusUpdate
-    {
-        [Description("i have considered taking up rabbit herding")]
-        a,
-
-        [Description("i have looked at my axe")]
-        b,
-
-        [Description("i have looked at my sharpening stone")]
-        c,
-
-        [Description("i have sharpened my axe")]
-        d,
-
-        [Description("i have resolved to move to fiji and become a publican")]
-        e,
-
-        [Description("i have rememebered the joy of axe swinging")]
-        f,
-
-        [Description("i have donned my cloak")]
-        g,
-
-        [Description("i have presented myself at my post")]
-        h,
-
-        [Description("i have hooded the unfortunate evildoer")]
-        i,
-
-        [Description("i have completed my duties")]
-        j
-    };
-
     /// <summary>
     /// despite her grizzly name, the executioner has never hurt a fly.
     /// she is a peaceful instigator of cpu cycles and only performs
@@ -55,41 +21,51 @@ namespace minion.powers
     internal class Executioner
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Random randomNumberGenerator = new Random();
 
         public Executioner(Paeon paeon, IEnumerable<EnvironmentVariable> environmentVariables, Command command)
         {
-            StatusUpdates = new ObservableCollection<string>();
-
-            // todo: replace with actual work
-            var shouldFail = randomNumberGenerator.Next(0, 100) < 25;
-            for (int s = 0; s < (shouldFail ? randomNumberGenerator.Next(0, 9) : 10); s ++)
-            {
-                StatusUpdates.Add(Enumerations.GetDescription((StatusUpdate)s));
-                logger.Trace(Enumerations.GetDescription((StatusUpdate)s).Replace(" my", " her").Replace("i have", "executioner has"));
-                Thread.Sleep(randomNumberGenerator.Next(500, 4000));
-            }
-            if(StatusUpdates.Count == 10)
-            TheMessAfterTheDeed = environmentVariables;
-            IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask = (StatusUpdates.Count == 10);
-            HasDoneTheDeed = true;
+            StatusUpdates = new List<string>();
+            TheMessBeforeTheDeed = environmentVariables;
+            ExecuteCommand();
         }
 
-        public ObservableCollection<string> StatusUpdates { get; private set; }
+        public List<string> StatusUpdates { get; private set; }
         public bool HasDoneTheDeed { get; private set; }
         public bool IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask { get; private set; }
+        public IEnumerable<EnvironmentVariable> TheMessBeforeTheDeed { get; private set; }
         public IEnumerable<EnvironmentVariable> TheMessAfterTheDeed { get; private set; }
-        
-    }
 
-    class Enumerations
-    {
-        public static string GetDescription(Enum value)
+        private void ExecuteCommand()
         {
-            var attributes = (DescriptionAttribute[])(value.GetType().GetField(value.ToString())).GetCustomAttributes(typeof(DescriptionAttribute), false);
-            return (attributes != null && attributes.Length > 0)
-                ? attributes[0].Description
-                : value.ToString();
+            // todo: replace with actual work
+            var shouldFail = ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 100) < 25;
+            var updates = new[] {
+                string.Format("i have {0} taking up {1} {2}.", ImaginaryFriend.InconclusiveAction, ImaginaryFriend.FarmActivity, ImaginaryFriend.NotFarmAnimals),
+                string.Format("i have {0} my {1} {2}.", ImaginaryFriend.WeaponPreparation, ImaginaryFriend.WeaponAdjective, ImaginaryFriend.Weapon),
+                string.Format("i have {0} my {1} {2}.", ImaginaryFriend.WeaponPreparation, ImaginaryFriend.WeaponAdjective, ImaginaryFriend.Weapon),
+                string.Format("i have {0} my {1} {2}.", ImaginaryFriend.WeaponPreparation, ImaginaryFriend.WeaponAdjective, ImaginaryFriend.Weapon),
+                string.Format("i have {0} to move to {1} and become a {2}.", ImaginaryFriend.ConclusiveAction, ImaginaryFriend.Place, ImaginaryFriend.Occupation),
+                string.Format("i have donned my {0}.", ImaginaryFriend.Wearable),
+                string.Format("i have {0} myself at {1}.", ImaginaryFriend.Appearance, ImaginaryFriend.Position),
+                string.Format("i have {0} the {1} {2}.", ImaginaryFriend.LastRite, ImaginaryFriend.CondemnedAdjective, ImaginaryFriend.Condemned),
+                string.Format("i have completed my duty.", ImaginaryFriend.LastRite, ImaginaryFriend.CondemnedAdjective, ImaginaryFriend.Condemned)
+            };
+
+            for (int i = 0; i < (shouldFail ? ImaginaryFriend.MagicNumberThinkerUpper.Next(0, updates.Length-1) : updates.Length); i++)
+            {
+                StatusUpdates.Add(updates[i]);
+                logger.Trace(updates[i].Replace(" my", " her").Replace("i have ", "executioner has "));
+                Thread.Sleep(ImaginaryFriend.MagicNumberThinkerUpper.Next(500, 4000));
+            }
+
+            TheMessAfterTheDeed = TheMessBeforeTheDeed;
+
+            IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask = (StatusUpdates.Count == updates.Length);
+            if (!IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
+            {
+                logger.Error("command execution failed."); // todo: include execution failure
+            }
+            HasDoneTheDeed = true;
         }
     }
 }

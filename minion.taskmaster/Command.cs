@@ -12,5 +12,10 @@ namespace minion.taskmaster
     {
         public string File { get; set; }
         public IEnumerable<string> Arguments { get; set; }
+
+        public override string ToString()
+        {
+            return string.Concat(File, ' ', Arguments == null ? string.Empty : string.Join(" ", Arguments));
+        }
     }
 }

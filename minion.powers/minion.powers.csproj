@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Attend.cs" />
     <Compile Include="Executioner.cs" />
+    <Compile Include="ImaginaryFriend.cs" />
     <Compile Include="Paeon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scout.cs" />
