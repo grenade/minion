@@ -138,6 +138,15 @@ namespace minion.powers
         {
             UserPrincipal.Delete();
             logger.Trace("minion {0} {1} and felt {2} remorse.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "slew" : "killed", Name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "no" : "some");
+            try
+            {
+                Directory.Delete(HomePath, true);
+                logger.Trace("minion burned and destroyed all {0}'s possessions and dominions.", Name);
+            }
+            catch
+            {
+                logger.Trace("{0}'s possessions and dominions were protected from minion by an unseen champion.", Name);
+            }
         }
 
         public static void KillAll()
@@ -156,6 +165,20 @@ namespace minion.powers
                         var name = paeon.SamAccountName;
                         paeon.Delete();
                         logger.Trace("minion {0} {1} during a {2}.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "anihilated" : "slaughtered", name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "killing spree" : "rampage");
+                        foreach (var d in new[] { 'c', 'x', 'y', 'z' })
+                        {
+                            var dir = Path.Combine(string.Concat(d, ':', Path.DirectorySeparatorChar), name);
+                            if (Directory.Exists(dir))
+                                try
+                                {
+                                    Directory.Delete(dir, true);
+                                    logger.Trace("minion burned and destroyed all {0}'s possessions and dominions.", name);
+                                }
+                                catch
+                                {
+                                    logger.Trace("{0}'s possessions and dominions were protected from minion by an unseen champion.", name);
+                                }
+                        }
                     });
             }
         }

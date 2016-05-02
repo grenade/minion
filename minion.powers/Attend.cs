@@ -4,6 +4,7 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+using minion.taskmaster;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -81,9 +82,10 @@ namespace minion.powers
             {
                 logger.Trace("minion cracks the whip.");
                 var quest = Scout.AnHonourableQuest();
+                var results = new List<CommandResult>();
+                var paeon = new Paeon();
                 try
                 {
-                    var paeon = new Paeon();
                     var payload = Scout.AnHonourableQuest();
                     logger.Info("payload aquired: {0}", payload.Id);
                     var environmentVariables = payload.Environment;
@@ -113,17 +115,8 @@ namespace minion.powers
                                 var executioner = new Executioner(paeon, environmentVariables, command);
                                 var seenStatusUpdates = new List<string>();
                                 while (!executioner.HasDoneTheDeed)
-                                {
-                                    var availableStatusUpdatesCount = executioner.StatusUpdates.Count;
-                                    var seenStatusUpdatesCount = seenStatusUpdates.Count;
-                                    for (int i = seenStatusUpdatesCount; i < availableStatusUpdatesCount; i++)
-                                    {
-                                        // todo: broadcast via livelog
-                                        seenStatusUpdates.Add(executioner.StatusUpdates[i]);
-                                        logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "shrugs" : "twiddles thumbs");
-                                    }
-                                }
-                                environmentVariables = executioner.TheMessAfterTheDeed;
+                                    Thread.Sleep(1000);
+                                environmentVariables = executioner.CommandResult.EnvironmentAfter;
                                 if (executioner.IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
                                 {
                                     logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "giggles" : "squirms delightedly");
@@ -132,6 +125,7 @@ namespace minion.powers
                                 {
                                     commandFailureEncountered = true;
                                 }
+                                results.Add(executioner.CommandResult);
                             }
                         }
                     }
@@ -142,11 +136,12 @@ namespace minion.powers
                     /*
                     - todo: report failure to taskmaster, blame paeon
                     */
-                    logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.");
+                    logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.", paeon.Name);
                     Paeon.KillAll();
                 }
                 finally
                 {
+                    Scout.LogResults(results);
                     _working = false;
                 }
             }
