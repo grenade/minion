@@ -88,6 +88,7 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="appSettings.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
