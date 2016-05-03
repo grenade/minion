@@ -67,7 +67,7 @@ namespace minion.taskmaster
                     client.Headers.Add(HttpRequestHeader.Accept, "application/vnd.github.v3+json");
                     client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2;)");
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-                    string responsebody = Encoding.UTF8.GetString(client.UploadData(url, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new commit { content = JsonConvert.SerializeObject(report), message = "payload execution report", sha = sha }))));
+                    string responsebody = Encoding.UTF8.GetString(client.UploadData(url, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new commit { content = JsonConvert.SerializeObject(report, Formatting.Indented), message = "payload execution report", sha = sha }))));
                 }
             }
         }

@@ -99,9 +99,8 @@ namespace minion.powers
                         else
                             process.StartInfo.EnvironmentVariables.Add(e.Name, e.Value);
                     });
-                    // many moz processes use stderr to communicate output. so there's no real benefit in differentiating between stderr and stdout
-                    process.ErrorDataReceived += (s, ea) => HandleOutput(ea.Data);
-                    process.OutputDataReceived += (s, ea) => HandleOutput(ea.Data);
+                    process.OutputDataReceived += (s, e) => HandleOutput(e.Data, "stdout");
+                    process.ErrorDataReceived += (s, e) => HandleOutput(e.Data, "stderr");
                     process.Start();
                     process.BeginOutputReadLine();
                     process.BeginErrorReadLine();
@@ -119,7 +118,7 @@ namespace minion.powers
                 catch (Win32Exception win32Exception)
                 {
                     // the payload command itself failed. we have no control over that, its business as usual while we record the failure.
-                    logger.Error(win32Exception, "CommandOutput");
+                    logger.Error(win32Exception, "stderr ");
                     IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask = false;
                 }
                 finally
@@ -150,11 +149,10 @@ namespace minion.powers
             HasDoneTheDeed = true;
         }
 
-        private void HandleOutput(string output)
+        private void HandleOutput(string message, string prefix)
         {
-            // todo: use a different nlog source for build output
-            if (!string.IsNullOrWhiteSpace(output))
-                logger.Info("CommandOutput{0}", output);
+            if (!string.IsNullOrWhiteSpace(message))
+                logger.Info("{0} {1}", prefix, message);
         }
 
         private IEnumerable<EnvironmentVariable> MergeProtectedEnvironmentVariables(IEnumerable<EnvironmentVariable> environmentVariables)
