@@ -6,6 +6,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using minion.taskmaster;
 using NLog;
+using System;
 using System.Collections.Generic;
 
 namespace minion.powers
@@ -21,14 +22,7 @@ namespace minion.powers
 
         public static bool HasFoundAnHonourableQuest()
         {
-            // be 25% successful at finding quests.
-            //var success = ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 100) < 25;
-            //logger.Trace("scout has {0}.", success ? "made triumphant noises" : "been found to be useless, yet again");
-            //return success;
-
-            // todo: implement
-            //return GitHub.RecentCommitsExist();
-            return true;
+            return !GitHub.RecentCommitsExist("mozharness-firefox-windows", new TimeSpan(2, 0, 0));
         }
 
         public static Payload AnHonourableQuest()

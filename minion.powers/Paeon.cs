@@ -34,6 +34,7 @@ namespace minion.powers
             UserPrincipal = CreateUserAccount();
             JoinGroups(DefaultGroupMemberships);
             CreateHomePaths();
+            logger.Info("user: '{0}' created in groups: '{1}', with home: '{2}'.", Name, string.Join("', '", DefaultGroupMemberships), HomePath);
         }
 
         public string Name { get; private set; }
@@ -137,10 +138,12 @@ namespace minion.powers
         public void Kill()
         {
             UserPrincipal.Delete();
+            logger.Info("user: '{0}' deleted.", Name);
             logger.Trace("minion {0} {1} and felt {2} remorse.", (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "slew" : "killed", Name, (Guid.NewGuid().ToByteArray().First() % 2 == 0) ? "no" : "some");
             try
             {
                 Directory.Delete(HomePath, true);
+                logger.Info("path: '{0}' deleted.", HomePath);
                 logger.Trace("minion burned and destroyed all {0}'s possessions and dominions.", Name);
             }
             catch

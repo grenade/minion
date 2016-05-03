@@ -78,7 +78,7 @@ namespace minion.powers
             logger.Trace("minion finds fullfilment in service.");
             _working = true;
 
-            if (Scout.HasFoundAnHonourableQuest())
+            if (!_interrupt && Scout.HasFoundAnHonourableQuest())
             {
                 logger.Trace("minion cracks the whip.");
                 var quest = Scout.AnHonourableQuest();
@@ -90,8 +90,6 @@ namespace minion.powers
                     logger.Info("payload aquired: {0}", payload.Id);
                     var environmentVariables = payload.Environment;
 
-                    var commandFailureEncountered = false;
-
                     foreach(var command in payload.Commands)
                     {
                         if (_interrupt)
@@ -102,7 +100,7 @@ namespace minion.powers
                         }
                         else
                         {
-                            if (commandFailureEncountered)
+                            if (results.Any(r => r.ExitCode != 0))
                             {
                                 // skip running the command
                                 logger.Debug("command skipped due to earlier failures: {0}", command);
@@ -117,14 +115,6 @@ namespace minion.powers
                                 while (!executioner.HasDoneTheDeed)
                                     Thread.Sleep(1000);
                                 environmentVariables = executioner.CommandResult.EnvironmentAfter;
-                                if (executioner.IsDutifullySatisfiedIfSlightlyMoroseConsideringHerBurdensomeTask)
-                                {
-                                    logger.Trace("paeon {0}.", (ImaginaryFriend.MagicNumberThinkerUpper.Next(0, 9) % 2 == 0) ? "giggles" : "squirms delightedly");
-                                }
-                                else
-                                {
-                                    commandFailureEncountered = true;
-                                }
                                 results.Add(executioner.CommandResult);
                             }
                         }
@@ -133,23 +123,21 @@ namespace minion.powers
                 }
                 catch (Exception ex)
                 {
-                    /*
-                    - todo: report failure to taskmaster, blame paeon
-                    */
                     logger.Error(ex, "{0} failed miserably and is looking forward to summary execution.", paeon.Name);
                     Paeon.KillAll();
                 }
                 finally
                 {
                     Scout.LogResults(results);
-                    _working = false;
                 }
             }
             else
             {
                 logger.Trace("minion fondly remembers purposeful days of lore.");
-                Thread.Sleep(1000);
+                if (!_interrupt)
+                    Thread.Sleep(1000);
             }
+            _working = false;
         }
 
         private void HandleExecutionerPropertyChange(object sender, PropertyChangedEventArgs e)

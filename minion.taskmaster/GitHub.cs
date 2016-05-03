@@ -1,19 +1,19 @@
 ﻿using Newtonsoft.Json;
+using NLog;
 using Octokit;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace minion.taskmaster
 {
     public class GitHub
     {
-        public GitHub()
-        {
-            client = new GitHubClient(new ProductHeaderValue(productHeader)) { Credentials = new Credentials(username, password) };
-            //client.Repository.Commit.GetAll(taskRepoOwner, taskRepoName, new CommitRequest { Author = taskRepoCommitterName, Path = "out/", Since = DateTime.Now.AddHours(-2) });
-        }
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private static string productHeader { get { return ConfigurationManager.AppSettings.Get("githubProductHeader"); } }
         private static string username { get { return ConfigurationManager.AppSettings.Get("githubUsername"); } }
@@ -31,19 +31,37 @@ namespace minion.taskmaster
             return JsonConvert.DeserializeObject<Payload>(json);
         }
 
-        public static bool RecentCommitsExist()
+        private static Dictionary<string, DateTimeOffset> githubCommitCache = new Dictionary<string, DateTimeOffset>();
+
+        public static bool RecentCommitsExist(string task, TimeSpan timespan)
         {
-            throw new NotImplementedException();
-            //using (WebClient client = new WebClient())
-            //{
-            //    var url = string.Format("https://api.github.com/repos/{0}/{1}/contents/out/{2}.json", taskRepoOwner, taskRepoName, task);
-            //    client.Headers.Add(HttpRequestHeader.Authorization, string.Concat("Basic ", Convert.ToBase64String(new UTF8Encoding().GetBytes(string.Concat(username, ':', password)))));
-            //    client.Headers.Add(HttpRequestHeader.Accept, "application/vnd.github.v3+json");
-            //    client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2;)");
-            //    string responsebody = Encoding.UTF8.GetString(client.UploadData(url, "GET", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new commit { content = JsonConvert.SerializeObject(report), message = "payload execution report", sha = sha }))));
-            //    //var githubFile = JsonConvert.DeserializeObject<githubFile>(client.DownloadString(url));
-            //    sha = githubFile.sha;
-            //}
+            // don't hammer github api, check if we already know about recent commits
+            if (githubCommitCache.ContainsKey(task) && githubCommitCache[task] > DateTimeOffset.Now.Add(-timespan))
+            {
+                logger.Trace("found commit in cache for {0}, dated {1}.", task, githubCommitCache[task].ToString("s", System.Globalization.CultureInfo.InvariantCulture));
+                return true;
+            };
+            var client = new GitHubClient(new ProductHeaderValue(productHeader)) { Credentials = new Credentials(username, password) };
+            var x = client.Repository.Commit.GetAll(taskRepoOwner, taskRepoName, new CommitRequest {
+                Author = taskRepoCommitterEmail,
+                Path = string.Format("out/{0}.json", task),
+                Since = DateTimeOffset.Now.Add(-timespan)
+            });
+            var commitsExist = false;
+            while (!x.IsCompleted)
+            {
+                x.Wait();
+                commitsExist = x.Result != null && x.Result.Count > 0;
+                if (commitsExist)
+                {
+                    if (githubCommitCache.ContainsKey(task))
+                        githubCommitCache[task] = x.Result.OrderBy(c => c.Commit.Committer.Date).Last().Commit.Committer.Date;
+                    else
+                        githubCommitCache.Add(task, x.Result.OrderBy(c => c.Commit.Committer.Date).Last().Commit.Committer.Date);
+                    logger.Debug("found commit in github for {0}, dated {1}.", task, githubCommitCache[task].ToString("s", System.Globalization.CultureInfo.InvariantCulture));
+                }
+            }
+            return commitsExist;
         }
 
         public static void Update(string task, object report)
